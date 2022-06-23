@@ -2,10 +2,23 @@ package pl.sb.projekt.user.mapper;
 
 import org.springframework.stereotype.Service;
 import pl.sb.projekt.user.dto.UserDto;
+import pl.sb.projekt.user.dto.UserForm;
 import pl.sb.projekt.user.model.User;
 
 @Service
 public class UserMapper {
+
+    public UserForm convertToForm(final User user) {
+        final UserForm userForm = new UserForm();
+        userForm.setLogin(user.getLogin());
+        userForm.setFirstName(user.getFirstName());
+        userForm.setLastName(user.getLastName());
+        userForm.setUserRole(user.getUserRole());
+        userForm.setPassword(user.getPassword());
+        userForm.setEmail(user.getEmail());
+        userForm.setCostPerHour(user.getCostPerHour());
+        return userForm;
+    }
 
     public UserDto convertToDto(final User user) {
         final UserDto userDto = new UserDto();
@@ -19,16 +32,27 @@ public class UserMapper {
         return userDto;
     }
 
-    public User convertFromDto(final UserDto userDto) {
-        User user = new User();
-        user.setLogin(userDto.getLogin());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setUserRole(userDto.getUserRole());
-        user.setPassword(userDto.getPassword());
-        user.setEmail(userDto.getEmail());
-        user.setCostPerHour(userDto.getCostPerHour());
+    public User convertFromForm(final UserForm userForm) {
+        final User user = new User();
+        user.setLogin(userForm.getLogin());
+        user.setFirstName(userForm.getFirstName());
+        user.setLastName(userForm.getLastName());
+        user.setUserRole(userForm.getUserRole());
+        user.setPassword(userForm.getPassword());
+        user.setEmail(userForm.getEmail());
+        user.setCostPerHour(userForm.getCostPerHour());
         return user;
+    }
+
+    public User setUserFields(final UserForm userForm, final User entity) {
+        entity.setLogin(userForm.getLogin());
+        entity.setFirstName(userForm.getFirstName());
+        entity.setLastName(userForm.getLastName());
+        entity.setUserRole(userForm.getUserRole());
+        entity.setPassword(userForm.getPassword());
+        entity.setEmail(userForm.getEmail());
+        entity.setCostPerHour(userForm.getCostPerHour());
+        return entity;
     }
 
 }

@@ -1,63 +1,62 @@
 package pl.sb.projekt.user.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import pl.sb.projekt.ObjectAlreadyExistsException;
 import pl.sb.projekt.user.dto.UserDto;
+import pl.sb.projekt.user.dto.UserForm;
 import pl.sb.projekt.user.service.UserService;
 
+import javax.validation.Valid;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/login/")
-    public UserDto getUserWithLogin(@RequestParam(required = false) String login) {
-        return userService.getUserByLogin(login);
-    }
-
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    public UserForm createUser(@RequestBody @Valid final UserForm userForm) {
+        userService.saveUser(userForm);
+        return userForm;
     }
 
-    @PostMapping("")
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        if (!userService.findUserByLogin(userDto.getLogin()) &&
-                !userService.findUserByEmail(userDto.getEmail())) {
-            userService.saveUser(userDto);
-            return userDto;
-        } else {
-            throw new ObjectAlreadyExistsException();
-        }
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{uuid}")
+    public UserDto getUserByUuid(@PathVariable final UUID uuid) {
+        return userService.getUserByUuid(uuid);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{uuid}")
+    public UserForm updateUser(@PathVariable final UUID uuid,
+                           @RequestBody @Valid final UserForm userUpdateForm){
+        return userService.updateUser(uuid, userUpdateForm);
     }
 
-    @PatchMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        userService.updateUser(id, userDto);
-        return userDto;
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{uuid}")
+    public void deleteUserById(@PathVariable final UUID uuid) {
+        userService.deleteUserByUuid(uuid);
     }
 
 }
