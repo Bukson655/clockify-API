@@ -3,6 +3,7 @@ package pl.sb.projekt.user.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Setter
 @Table(name = "user", schema = "public")
 @NoArgsConstructor
+@FieldNameConstants
 public class User {
 
     @Id
