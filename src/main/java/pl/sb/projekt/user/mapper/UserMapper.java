@@ -1,14 +1,12 @@
 package pl.sb.projekt.user.mapper;
 
-import org.springframework.stereotype.Service;
 import pl.sb.projekt.user.dto.UserDto;
 import pl.sb.projekt.user.dto.UserForm;
 import pl.sb.projekt.user.model.User;
 
-@Service
 public class UserMapper {
 
-    public UserForm convertToForm(final User user) {
+    public static UserForm convertToForm(final User user) {
         final UserForm userForm = new UserForm();
         userForm.setLogin(user.getLogin());
         userForm.setFirstName(user.getFirstName());
@@ -20,7 +18,7 @@ public class UserMapper {
         return userForm;
     }
 
-    public UserDto convertToDto(final User user) {
+    public static UserDto convertToDto(final User user) {
         final UserDto userDto = new UserDto();
         userDto.setLogin(user.getLogin());
         userDto.setFirstName(user.getFirstName());
@@ -32,7 +30,7 @@ public class UserMapper {
         return userDto;
     }
 
-    public User convertFromForm(final UserForm userForm) {
+    public static User convertFromForm(final UserForm userForm) {
         final User user = new User();
         user.setLogin(userForm.getLogin());
         user.setFirstName(userForm.getFirstName());
@@ -44,7 +42,7 @@ public class UserMapper {
         return user;
     }
 
-    public User setUserFields(final UserForm userForm, final User entity) {
+    public static User setUserFields(final UserForm userForm, final User entity) {
         entity.setLogin(userForm.getLogin());
         entity.setFirstName(userForm.getFirstName());
         entity.setLastName(userForm.getLastName());

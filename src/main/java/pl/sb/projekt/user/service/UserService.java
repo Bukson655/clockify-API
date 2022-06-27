@@ -20,8 +20,8 @@ public interface UserService {
 
     UserForm updateUser(final UUID uuid, final UserForm userForm, final UUID adminUuid);
 
-    void verifyRoleByUuid(UUID uuid, UserRole userRole);
-
     List<UserDto> getFilteredUsers(UserFilter userFilter, UUID adminUuid);
+
+    void verifyRoleByUuid(final UUID uuid, final UserRole userRole);
 
 }

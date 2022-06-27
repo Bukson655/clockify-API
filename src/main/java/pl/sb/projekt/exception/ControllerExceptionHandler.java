@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Date;
 
 @RestControllerAdvice
@@ -59,9 +58,9 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {AccessDeniedException.class})
-    public ResponseEntity<ErrorMessage> notAdminException(
-            final AccessDeniedException ex, final WebRequest request) {
+    @ExceptionHandler(value = {SecurityException.class})
+    public ResponseEntity<ErrorMessage> securityException(
+            final SecurityException ex, final WebRequest request) {
         final ErrorMessage message = new ErrorMessage(
                 HttpStatus.UNAUTHORIZED.value(),
                 new Date(),
