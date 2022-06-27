@@ -23,17 +23,16 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(userMapper::convertToDto)
+                .map(UserMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 
     public UserDto getUserByUuid(final UUID uuid) {
         return userRepository.findUserByUuid(uuid)
-                .map(userMapper::convertToDto)
+                .map(UserMapper::convertToDto)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", uuid)));
     }
 
@@ -47,7 +46,7 @@ public class UserServiceImpl implements UserService {
     public void saveUser(final UserForm userForm, final UUID adminUuid) {
         verifyRoleByUuid(adminUuid, UserRole.ADMIN);
         verifyLoginAndEmail(userForm);
-        final User user = userMapper.convertFromForm(userForm);
+        final User user = UserMapper.convertFromForm(userForm);
         userRepository.save(user);
     }
 
@@ -55,13 +54,16 @@ public class UserServiceImpl implements UserService {
     public UserForm updateUser(final UUID uuid, final UserForm userForm, final UUID adminUuid) {
         verifyRoleByUuid(adminUuid, UserRole.ADMIN);
         User user = verifyLoginAndEmailFromExistingUser(uuid, userForm);
-        return userMapper.convertToForm(userMapper.setUserFields(userForm, user));
+        return UserMapper.convertToForm(UserMapper.setUserFields(userForm, user));
 
     }
 
     public void verifyRoleByUuid(final UUID uuid, final UserRole userRole) {
-        userRepository.findUserByUuid(uuid)
+        User user = userRepository.findUserByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", uuid)));
+        if (!user.getUserRole().equals(userRole)) {
+            throw new SecurityException(String.format("Given UUID %s does not belong to admin", uuid));
+        }
     }
 
     public List<UserDto> getFilteredUsers(final UserFilter userFilter, final UUID adminUuid) {
@@ -69,7 +71,7 @@ public class UserServiceImpl implements UserService {
         final UserSpecification userSpecification = new UserSpecification(userFilter);
         return userRepository.findAll(userSpecification)
                 .stream()
-                .map(userMapper::convertToDto)
+                .map(UserMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 

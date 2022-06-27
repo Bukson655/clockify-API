@@ -1,5 +1,7 @@
 package pl.sb.projekt.user.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +14,9 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "user", schema = "public")
+@AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
 public class User {
