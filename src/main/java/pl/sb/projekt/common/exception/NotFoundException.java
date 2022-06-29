@@ -1,4 +1,4 @@
-package pl.sb.projekt.exception;
+package pl.sb.projekt.common.exception;
 
 public class NotFoundException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package pl.sb.projekt.exception;
+package pl.sb.projekt.common.controlleradvice;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

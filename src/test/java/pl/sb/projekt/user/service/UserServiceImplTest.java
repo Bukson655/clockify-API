@@ -11,7 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import pl.sb.projekt.exception.NotFoundException;
+import pl.sb.projekt.common.entity.EntityAbstract;
+import pl.sb.projekt.common.exception.NotFoundException;
 import pl.sb.projekt.user.dto.UserDto;
 import pl.sb.projekt.user.dto.UserForm;
 import pl.sb.projekt.user.model.User;
@@ -44,9 +45,9 @@ class UserServiceImplTest {
 
     @BeforeEach
     void init() {
-        userAdmin = User.builder().id(1L).login("admin").firstName("Sławomir").lastName("Błaszkiewicz").userRole(UserRole.ADMIN)
+        userAdmin = User.builder().login("admin").firstName("Sławomir").lastName("Błaszkiewicz").userRole(UserRole.ADMIN)
                 .email("blaszkiewiczslawomir@gmail.com").password("admin123").costPerHour(BigDecimal.valueOf(100)).build();
-        userRegular = User.builder().id(2L).login("andrzej").firstName("Andrzej").lastName("Andrzejewski").userRole(UserRole.USER)
+        userRegular = User.builder().login("andrzej").firstName("Andrzej").lastName("Andrzejewski").userRole(UserRole.USER)
                 .email("andrzejewski@wp.pl").password("andrzej123").costPerHour(BigDecimal.valueOf(110)).build();
         userForm = UserForm.builder().login("piter").firstName("Piotr").lastName("Frączewski").userRole(UserRole.USER)
                 .email( "fraczewski@wp.pl").costPerHour(BigDecimal.valueOf(90)).build();
@@ -69,7 +70,7 @@ class UserServiceImplTest {
             //then
             assertThat(result.size()).isEqualTo(2);
             assertThat(result.get(0)).usingRecursiveComparison()
-                    .ignoringFields(User.Fields.id, User.Fields.uuid)
+                    .ignoringFields(EntityAbstract.Fields.id, EntityAbstract.Fields.uuid)
                     .isEqualTo(users.get(0));
         }
     }
@@ -174,7 +175,7 @@ class UserServiceImplTest {
             verify(userRepository).save(userArgumentCaptor.capture());
             final User capturedUser = userArgumentCaptor.getValue();
             assertThat(capturedUser).usingRecursiveComparison()
-                    .ignoringFields(User.Fields.id, User.Fields.uuid)
+                    .ignoringFields(EntityAbstract.Fields.id, EntityAbstract.Fields.uuid, User.Fields.projects)
                     .isEqualTo(userToSave);
         }
 
