@@ -1,13 +1,15 @@
-package pl.sb.projekt.exception;
+package pl.sb.projekt.common.controlleradvice;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import pl.sb.projekt.common.exception.NotFoundException;
 
 import java.util.Date;
 
@@ -67,6 +69,17 @@ public class ControllerExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
+    public ResponseEntity<ErrorMessage> httpMessageNotReadableException(
+            final HttpMessageNotReadableException ex, final WebRequest request) {
+        final ErrorMessage message = new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
 }

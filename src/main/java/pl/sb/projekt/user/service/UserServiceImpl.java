@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.sb.projekt.exception.NotFoundException;
+import pl.sb.projekt.common.exception.NotFoundException;
 import pl.sb.projekt.user.dto.UserDto;
 import pl.sb.projekt.user.dto.UserForm;
 import pl.sb.projekt.user.mapper.UserMapper;

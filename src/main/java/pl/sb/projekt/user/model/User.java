@@ -6,10 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import pl.sb.projekt.common.entity.EntityAbstract;
+import pl.sb.projekt.project.model.Project;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,15 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", unique = true, nullable = false)
-    private Long id;
-
-    @Column(name = "uuid", unique = true, nullable = false)
-    private final UUID uuid = UUID.randomUUID();
+public class User extends EntityAbstract {
 
     @Column(name = "login", unique = true, nullable = false, length = 50)
     private String login;
@@ -50,5 +45,9 @@ public class User {
 
     @Column(name = "cost_per_hour", nullable = false, precision = 10, scale = 2)
     private BigDecimal costPerHour;
+
+    @ManyToMany(mappedBy = "users")
+    @Builder.Default
+    private Set<Project> projects = new HashSet<>();
 
 }
