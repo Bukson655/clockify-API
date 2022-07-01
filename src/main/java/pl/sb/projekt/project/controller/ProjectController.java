@@ -76,7 +76,7 @@ public class ProjectController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/filter")
     public List<ProjectDto> getFilteredProjects(@RequestBody @Valid final ProjectFilter projectFilter,
-                                          @RequestParam(name = "uuid") final UUID managerUuid) {
+                                                @RequestParam(name = "uuid") final UUID managerUuid) {
         return projectService.getFilteredProjects(projectFilter, managerUuid);
     }
 

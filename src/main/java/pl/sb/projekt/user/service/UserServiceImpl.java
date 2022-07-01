@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto getUserByUuid(final UUID uuid) {
-        return userRepository.findUserByUuid(uuid)
+        return userRepository.findByUuid(uuid)
                 .map(UserMapper::convertToDto)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", uuid)));
     }
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void verifyRoleByUuid(final UUID uuid, final UserRole userRole) {
-        User user = userRepository.findUserByUuid(uuid)
+        User user = userRepository.findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", uuid)));
         if (!user.getUserRole().equals(userRole)) {
             throw new SecurityException(String.format("Given UUID %s does not belong to admin", uuid));
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private User verifyLoginAndEmailFromExistingUser(final UUID uuid, final UserForm userForm) {
-        User entity = userRepository.findUserByUuid(uuid)
+        User entity = userRepository.findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", uuid)));
         if (userRepository.existsByLoginAndLoginNot(userForm.getLogin(), entity.getLogin())) {
             throw new DataIntegrityViolationException(

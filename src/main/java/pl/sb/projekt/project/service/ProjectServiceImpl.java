@@ -39,7 +39,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void allocateToProject(final UUID projectUuid, final UUID managerUuid, final UUID userUuid) {
         final Project project = getProject(projectUuid, managerUuid);
-        final User user = userRepository.findUserByUuid(userUuid)
+        final User user = userRepository.findByUuid(userUuid)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", userUuid)));
         project.addUser(user);
     }
@@ -47,7 +47,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void removeFromProject(final UUID projectUuid, final UUID managerUuid, final UUID userUuid) {
         final Project project = getProject(projectUuid, managerUuid);
-        final User user = userRepository.findUserByUuid(userUuid)
+        final User user = userRepository.findByUuid(userUuid)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", userUuid)));
         project.removeUser(user);
     }
