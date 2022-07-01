@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import pl.sb.projekt.common.entity.EntityAbstract;
 import pl.sb.projekt.project.model.Project;
+import pl.sb.projekt.record.model.Record;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -49,5 +50,30 @@ public class User extends EntityAbstract {
     @ManyToMany(mappedBy = "users")
     @Builder.Default
     private Set<Project> projects = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    @Builder.Default
+    private Set<Record> records = new HashSet<>();
+
+    public void addProject(Project project) {
+        projects.add(project);
+        project.addUser(this);
+    }
+
+    public void removeProject(Project project) {
+        projects.remove(project);
+        project.removeUser(this);
+
+    }
+
+    public void addRecord(Record record) {
+        this.records.add(record);
+        record.setUser(this);
+    }
+
+    public void removeRecord(Record record) {
+        this.records.remove(record);
+        record.setUser(null);
+    }
 
 }

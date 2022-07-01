@@ -29,3 +29,12 @@ CREATE TABLE IF NOT EXISTS "project_user" (
     project_id BIGINT REFERENCES project,
     user_id BIGINT REFERENCES "user",
     PRIMARY KEY (project_id, user_id));
+
+CREATE TABLE IF NOT EXISTS "record" (
+    id BIGINT PRIMARY KEY,
+    uuid uuid NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+    start_date_time TIMESTAMP NOT NULL,
+    end_date_time TIMESTAMP NOT NULL,
+    description VARCHAR (255),
+    project_id BIGINT REFERENCES project,
+    user_id BIGINT REFERENCES "user");

@@ -1,11 +1,13 @@
 package pl.sb.projekt.project.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import pl.sb.projekt.common.entity.EntityAbstract;
+import pl.sb.projekt.record.model.Record;
 import pl.sb.projekt.user.model.User;
 
 import javax.persistence.CascadeType;
@@ -14,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,6 +26,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "project", schema = "public")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -52,14 +56,31 @@ public class Project extends EntityAbstract {
             name = "project_user",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @Builder.Default
     private Set<User> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "project")
+    @Builder.Default
+    private Set<Record> records = new HashSet<>();
 
     public void addUser(User user) {
         this.users.add(user);
+        user.addProject(this);
     }
 
     public void removeUser(User user) {
         this.users.remove(user);
+        user.removeProject(this);
+    }
+
+    public void addRecord(Record record) {
+        this.records.add(record);
+        record.setProject(this);
+    }
+
+    public void removeRecord(Record record) {
+        this.records.remove(record);
+        record.setProject(null);
     }
 
 }

@@ -83,7 +83,7 @@ class UserServiceImplTest {
         @DisplayName("Should return existing user with given UUID")
         void shouldReturnExistingUserWithGivenUuid() {
             //given
-            when(userRepository.findUserByUuid(userRegular.getUuid())).thenReturn(Optional.of(userRegular));
+            when(userRepository.findByUuid(userRegular.getUuid())).thenReturn(Optional.of(userRegular));
 
             //when
             final UserDto actualUser = userService.getUserByUuid(userRegular.getUuid());
@@ -97,7 +97,7 @@ class UserServiceImplTest {
         void shouldThrowExceptionWhenUserWithGivenUuidDoesNotExist() {
             //given
             final UUID randomUUID = UUID.randomUUID();
-            when(userRepository.findUserByUuid(randomUUID)).thenReturn(Optional.empty());
+            when(userRepository.findByUuid(randomUUID)).thenReturn(Optional.empty());
 
             //when //then
             assertThatThrownBy(() -> userService.getUserByUuid(randomUUID))
@@ -116,7 +116,7 @@ class UserServiceImplTest {
             //given
             final UUID uuidOfUserToBeDeleted = userRegular.getUuid();
             final UUID adminUuid = userAdmin.getUuid();
-            when(userRepository.findUserByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
+            when(userRepository.findByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
 
             //when
             userService.deleteUserByUuid(uuidOfUserToBeDeleted, adminUuid);
@@ -144,7 +144,7 @@ class UserServiceImplTest {
             //given
             final UUID uuid = userRegular.getUuid();
             final UUID regularUserUuid = UUID.randomUUID();
-            when(userRepository.findUserByUuid(regularUserUuid)).thenReturn(Optional.ofNullable(userRegular));
+            when(userRepository.findByUuid(regularUserUuid)).thenReturn(Optional.ofNullable(userRegular));
 
             //when // then
             assertThatThrownBy(() -> userService.deleteUserByUuid(uuid, regularUserUuid))
@@ -164,7 +164,7 @@ class UserServiceImplTest {
             final UUID adminUuid = userAdmin.getUuid();
             UserForm userToSave = new UserForm("piter", "Piotr", "Frączewski", UserRole.USER,
                     "piter123", "f.piotr@wp.pl", BigDecimal.valueOf(95));
-            when(userRepository.findUserByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
+            when(userRepository.findByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
             when(userRepository.existsByLogin(userToSave.getLogin())).thenReturn(false);
             when(userRepository.existsByEmail(userToSave.getEmail())).thenReturn(false);
 
@@ -175,7 +175,8 @@ class UserServiceImplTest {
             verify(userRepository).save(userArgumentCaptor.capture());
             final User capturedUser = userArgumentCaptor.getValue();
             assertThat(capturedUser).usingRecursiveComparison()
-                    .ignoringFields(EntityAbstract.Fields.id, EntityAbstract.Fields.uuid, User.Fields.projects)
+                    .ignoringFields(EntityAbstract.Fields.id, EntityAbstract.Fields.uuid,
+                            User.Fields.projects, User.Fields.records)
                     .isEqualTo(userToSave);
         }
 
@@ -184,7 +185,7 @@ class UserServiceImplTest {
         void shouldNotSaveUserWhenGivenUuidNotExists() {
             //given
             final UUID nonExistingUuid = UUID.randomUUID();
-            when(userRepository.findUserByUuid(nonExistingUuid)).thenReturn(Optional.empty());
+            when(userRepository.findByUuid(nonExistingUuid)).thenReturn(Optional.empty());
 
             //when then
             assertThatThrownBy(() -> userService.saveUser(userForm, nonExistingUuid))
@@ -197,7 +198,7 @@ class UserServiceImplTest {
         void shouldNotSaveUserWhenGivenUuidDoesNotBelongToAdmin() {
             //given
             final UUID regularUserUuid = userRegular.getUuid();
-            when(userRepository.findUserByUuid(regularUserUuid)).thenReturn(Optional.ofNullable(userRegular));
+            when(userRepository.findByUuid(regularUserUuid)).thenReturn(Optional.ofNullable(userRegular));
 
             //when //then
             assertThatThrownBy(() -> userService.saveUser(userForm, regularUserUuid))
@@ -210,7 +211,7 @@ class UserServiceImplTest {
         void shouldNotSaveUserWhenLoginAlreadyExists() {
             //given
             final UUID adminUuid = userAdmin.getUuid();
-            when(userRepository.findUserByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
+            when(userRepository.findByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
             when(userRepository.existsByLogin(userForm.getLogin())).thenReturn(true);
 
             //when //then
@@ -224,7 +225,7 @@ class UserServiceImplTest {
         void shouldNotSaveUserWhenEmailAlreadyExists() {
             //given
             final UUID adminUuid = userAdmin.getUuid();
-            when(userRepository.findUserByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
+            when(userRepository.findByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
             when(userRepository.existsByLogin(userForm.getLogin())).thenReturn(false);
             when(userRepository.existsByEmail(userForm.getEmail())).thenReturn(true);
 
@@ -285,8 +286,8 @@ class UserServiceImplTest {
                     "piotrek123", "frackiewicz.piotr@wp.pl", BigDecimal.valueOf(90));
             final UUID nonAdminUuid = userRegular.getUuid();
             final UUID userToEditUuid = userRegular.getUuid();
-            when(userRepository.findUserByUuid(nonAdminUuid)).thenReturn(Optional.ofNullable(userRegular));
-            when(userRepository.findUserByUuid(userToEditUuid)).thenReturn(Optional.ofNullable(userRegular));
+            when(userRepository.findByUuid(nonAdminUuid)).thenReturn(Optional.ofNullable(userRegular));
+            when(userRepository.findByUuid(userToEditUuid)).thenReturn(Optional.ofNullable(userRegular));
 
             //when //then
             assertThatThrownBy(() -> userService.updateUser(userToEditUuid, newUserData, nonAdminUuid))
@@ -302,7 +303,7 @@ class UserServiceImplTest {
                     "piotrek123", "frackiewicz.piotr@wp.pl", BigDecimal.valueOf(90));
             final UUID nonExistingUuid = UUID.randomUUID();
             final UUID userToEditUuid = userRegular.getUuid();
-            when(userRepository.findUserByUuid(nonExistingUuid)).thenReturn(Optional.empty());
+            when(userRepository.findByUuid(nonExistingUuid)).thenReturn(Optional.empty());
 
             //when //then
             assertThatThrownBy(() -> userService.updateUser(userToEditUuid, newUserData, nonExistingUuid))
@@ -345,8 +346,8 @@ class UserServiceImplTest {
         }
 
         private void uuidSettings(UUID adminUuid, UUID userToEditUuid) {
-            when(userRepository.findUserByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
-            when(userRepository.findUserByUuid(userToEditUuid)).thenReturn(Optional.ofNullable(userRegular));
+            when(userRepository.findByUuid(adminUuid)).thenReturn(Optional.ofNullable(userAdmin));
+            when(userRepository.findByUuid(userToEditUuid)).thenReturn(Optional.ofNullable(userRegular));
         }
     }
 
@@ -360,7 +361,7 @@ class UserServiceImplTest {
             //given
             final UserFilter userFilter = new UserFilter();
             final UUID regularUserUuid = userRegular.getUuid();
-            when(userRepository.findUserByUuid(regularUserUuid)).thenReturn(Optional.ofNullable(userRegular));
+            when(userRepository.findByUuid(regularUserUuid)).thenReturn(Optional.ofNullable(userRegular));
 
             //when //then
             assertThatThrownBy(() -> userService.getFilteredUsers(userFilter, regularUserUuid))
@@ -374,7 +375,7 @@ class UserServiceImplTest {
             //given
             final UserFilter userFilter = new UserFilter();
             final UUID nonExistingUuid = UUID.randomUUID();
-            when(userRepository.findUserByUuid(nonExistingUuid)).thenReturn(Optional.empty());
+            when(userRepository.findByUuid(nonExistingUuid)).thenReturn(Optional.empty());
 
             //when //then
             assertThatThrownBy(() -> userService.getFilteredUsers(userFilter, nonExistingUuid))
