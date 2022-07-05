@@ -2,6 +2,7 @@ package pl.sb.projekt.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.sb.projekt.user.model.User;
 
@@ -11,6 +12,11 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
+    @Query("SELECT u " +
+            "FROM User u " +
+            "LEFT JOIN FETCH u.projects p " +
+            "LEFT JOIN FETCH u.records r " +
+            "WHERE u.uuid = :uuid")
     Optional<User> findByUuid(UUID uuid);
 
     void deleteByUuid(UUID uuid);

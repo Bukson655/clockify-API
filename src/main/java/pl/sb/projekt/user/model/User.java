@@ -57,13 +57,10 @@ public class User extends EntityAbstract {
 
     public void addProject(Project project) {
         projects.add(project);
-        project.addUser(this);
     }
 
     public void removeProject(Project project) {
         projects.remove(project);
-        project.removeUser(this);
-
     }
 
     public void addRecord(Record record) {

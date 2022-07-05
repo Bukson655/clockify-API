@@ -13,6 +13,11 @@ import java.util.UUID;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
 
+    @Query("SELECT p " +
+            "FROM Project p " +
+            "LEFT JOIN FETCH p.users u " +
+            "LEFT JOIN FETCH p.records r " +
+            "WHERE p.uuid = :uuid")
     Optional<Project> findByUuid(UUID uuid);
 
     boolean existsByTitle(String title);
@@ -21,8 +26,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 
     boolean existsByTitleAndTitleNot(String formTitle, String projectTitle);
 
-    @Query("SELECT DISTINCT p FROM " +
-            "Project p " +
-            "LEFT JOIN FETCH p.users u")
-    List<Project> findAllProjectsWithBudgetUseAndUsers();
+    @Query("SELECT DISTINCT p " +
+            "FROM Project p " +
+            "LEFT JOIN FETCH p.users u " +
+            "LEFT JOIN FETCH p.records r")
+    List<Project> findAllProjectsWithUsers();
+
+    @Query("SELECT DISTINCT p " +
+            "FROM Project p " +
+            "LEFT JOIN FETCH p.records r")
+    List<Project> findAll();
 }

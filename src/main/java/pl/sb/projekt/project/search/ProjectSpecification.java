@@ -22,12 +22,13 @@ public class ProjectSpecification implements Specification<Project> {
         final List<Predicate> predicateList = new ArrayList<>();
 
         SpecificationUtils.addLikePredicate(root.get(Project.Fields.title), builder, predicateList, projectFilter.getTitle());
-        SpecificationUtils.addOverBudgetPredicate(root.get(Project.Fields.currentSpending), root.get(Project.Fields.budget),
-                builder, predicateList, projectFilter.isOverBudget());
+        SpecificationUtils.addOverBudgetPredicate(root.get(Project.Fields.budgetUse), builder, predicateList,
+                projectFilter.isOverBudget());
         SpecificationUtils.addBetweenPredicate(root.get(Project.Fields.startDate), root.get(Project.Fields.endDate),
                 builder, predicateList, projectFilter.getStartFrom(), projectFilter.getEndTo());
         SpecificationUtils.addUuidsListPredicate(root, predicateList, projectFilter.getUuids());
 
         return builder.and(predicateList.toArray(Predicate[]::new));
     }
+
 }

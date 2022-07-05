@@ -45,11 +45,11 @@ public class Project extends EntityAbstract {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "current_spending", nullable = false, precision = 10, scale = 2)
-    private BigDecimal currentSpending;
-
     @Column(name = "budget", nullable = false, precision = 10, scale = 2)
     private BigDecimal budget;
+
+    @Column(name = "budget_use", nullable = false)
+    private BigDecimal budgetUse = BigDecimal.ZERO;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
