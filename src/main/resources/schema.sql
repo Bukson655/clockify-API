@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS "project" (
     description VARCHAR (255),
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    current_spending NUMERIC(10,2) NOT NULL,
-    budget NUMERIC(10,2) NOT NULL);
+    budget NUMERIC(10,2) NOT NULL,
+    budget_use NUMERIC(6,2) NOT NULL);
 
 CREATE TABLE IF NOT EXISTS "project_user" (
     project_id BIGINT REFERENCES project,
@@ -38,3 +38,9 @@ CREATE TABLE IF NOT EXISTS "record" (
     description VARCHAR (255),
     project_id BIGINT REFERENCES project,
     user_id BIGINT REFERENCES "user");
+
+CREATE INDEX IF NOT EXISTS idx_project
+    ON "record" (project_id);
+
+CREATE INDEX IF NOT EXISTS idx_user
+    ON "record" (user_id);

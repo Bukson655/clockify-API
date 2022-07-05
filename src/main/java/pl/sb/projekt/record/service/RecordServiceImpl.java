@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.sb.projekt.common.exception.NotFoundException;
 import pl.sb.projekt.project.model.Project;
 import pl.sb.projekt.project.repository.ProjectRepository;
+import pl.sb.projekt.project.service.ProjectService;
 import pl.sb.projekt.record.dto.RecordDto;
 import pl.sb.projekt.record.dto.RecordForm;
 import pl.sb.projekt.record.mapper.RecordMapper;
@@ -24,8 +25,9 @@ import java.util.UUID;
 public class RecordServiceImpl implements RecordService {
 
     private final RecordRepository recordRepository;
-    private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
     public List<RecordDto> getAllRecordsByUserUuid(final UUID userUuid) {
         return recordRepository.findAllByUserUuid(userUuid)
@@ -46,6 +48,7 @@ public class RecordServiceImpl implements RecordService {
         final Record record = recordRepository.save(RecordMapper.convertFromForm(recordForm, user, project));
         user.addRecord(record);
         project.addRecord(record);
+        projectService.updateBudgetUse(project, projectService.countCurrentSpendingForProject(project));
     }
 
     @Transactional
@@ -61,24 +64,26 @@ public class RecordServiceImpl implements RecordService {
         recordRepository.deleteByUuidAndUserUuid(recordUuid, userUuid);
         user.removeRecord(record);
         project.removeRecord(record);
+        projectService.updateBudgetUse(project, projectService.countCurrentSpendingForProject(project));
     }
 
     @Transactional
     public RecordDto updateRecord(final UUID recordUuid, final UUID userUuid, final RecordForm recordForm) {
         verifyIfDateTimeIsCorrect(recordForm.getStartDateTime(), recordForm.getEndDateTime());
-        Project project = projectRepository.findByUuid(recordForm.getProjectUuid())
+        final Project project = projectRepository.findByUuid(recordForm.getProjectUuid())
                 .orElseThrow(() -> new NotFoundException(String.format("Project with UUID %s does not exist", recordForm.getProjectUuid())));
-        User user = userRepository.findByUuid(userUuid)
+        final User user = userRepository.findByUuid(userUuid)
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", userUuid)));
         verifyIfUserBelongToProject(user, project);
 
         final Record record = recordRepository.findRecordByUuidAndUserUuid(recordUuid, userUuid)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Record with UUID %s and user with UUID %s does not match", recordUuid, userUuid)));
+        projectService.updateBudgetUse(project, projectService.countCurrentSpendingForProject(project));
         return RecordMapper.convertToDto(RecordMapper.setRecordFields(recordForm, record, project));
     }
 
-    private void verifyIfUserBelongToProject(User user, Project project) {
+    private void verifyIfUserBelongToProject(final User user, final Project project) {
         if (!project.getUsers().contains(user)) {
             throw new NotFoundException(
                     String.format("User with UUID %s does not belong to project with UUID %s", user.getUuid(), project.getUuid()));

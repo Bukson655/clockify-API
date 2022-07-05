@@ -2,8 +2,10 @@ package pl.sb.projekt.project.service;
 
 import pl.sb.projekt.project.dto.ProjectDto;
 import pl.sb.projekt.project.dto.ProjectForm;
+import pl.sb.projekt.project.model.Project;
 import pl.sb.projekt.project.search.ProjectFilter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,5 +24,9 @@ public interface ProjectService {
     void removeFromProject(final UUID projectUuid, final UUID managerUuid, final UUID userUuid);
 
     List<ProjectDto> getFilteredProjects(final ProjectFilter projectFilter, final UUID managerUuid);
+
+    BigDecimal countCurrentSpendingForProject(final Project project);
+
+    void updateBudgetUse(Project project, BigDecimal currentSpending);
 }
 

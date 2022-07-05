@@ -11,7 +11,6 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,10 +37,6 @@ public class ProjectForm {
     @NotNull(message = "endDate cannot be null, use pattern : yyyy-MM-mm")
     @DateTimeFormat(pattern = "yyyy-MM-mm")
     private LocalDate endDate;
-
-    @NotNull
-    @PositiveOrZero(message = "budget has to be greater or equal 0")
-    private BigDecimal currentSpending;
 
     @NotNull
     @Positive(message = "budget has to be greater than 0")

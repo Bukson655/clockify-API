@@ -25,7 +25,6 @@ public class SpecificationUtils {
     public static void addBetweenPredicate(final Path<LocalDate> from, final Path<LocalDate> to,
                                            final CriteriaBuilder builder, final List<Predicate> predicateList,
                                            final LocalDate startFrom, final LocalDate endTo) {
-
         if (Objects.nonNull(startFrom) && Objects.nonNull(endTo)) {
             predicateList.add(builder.greaterThanOrEqualTo(from, startFrom));
             predicateList.add(builder.lessThanOrEqualTo(to, endTo));
@@ -36,13 +35,13 @@ public class SpecificationUtils {
         }
     }
 
-    public static void addOverBudgetPredicate(final Path<BigDecimal> currentSpending, final Path<BigDecimal> budget, final CriteriaBuilder builder,
+    public static void addOverBudgetPredicate(final Path<BigDecimal> budgetUse, final CriteriaBuilder builder,
                                               final List<Predicate> predicateList, Boolean overBudget) {
         if (Objects.nonNull(overBudget)) {
             if (overBudget) {
-                predicateList.add(builder.greaterThan(currentSpending, budget));
+                predicateList.add(builder.greaterThanOrEqualTo(budgetUse, BigDecimal.valueOf(100)));
             } else {
-                predicateList.add(builder.lessThan(currentSpending, budget));
+                predicateList.add(builder.lessThan(budgetUse, BigDecimal.valueOf(100)));
             }
         }
     }

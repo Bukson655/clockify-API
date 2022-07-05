@@ -12,11 +12,15 @@ import pl.sb.projekt.project.model.Project;
 import pl.sb.projekt.project.repository.ProjectRepository;
 import pl.sb.projekt.project.search.ProjectFilter;
 import pl.sb.projekt.project.search.ProjectSpecification;
+import pl.sb.projekt.record.model.Record;
 import pl.sb.projekt.user.model.User;
 import pl.sb.projekt.user.model.UserRole;
 import pl.sb.projekt.user.repository.UserRepository;
 import pl.sb.projekt.user.service.UserService;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,8 +35,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     public List<ProjectDto> getAllProjects(final UUID managerUuid) {
         userService.verifyRoleByUuid(managerUuid, UserRole.MANAGER);
-        return projectRepository.findAllProjectsWithBudgetUseAndUsers().stream()
-                .map(ProjectMapper::convertToDto)
+        return projectRepository.findAllProjectsWithUsers().stream()
+                .map(project -> {
+                    BigDecimal currentSpending = countCurrentSpendingForProject(project);
+                    return ProjectMapper.convertToDto(project, currentSpending);
+                })
                 .toList();
     }
 
@@ -76,9 +83,11 @@ public class ProjectServiceImpl implements ProjectService {
     public List<ProjectDto> getFilteredProjects(final ProjectFilter projectFilter, final UUID managerUuid) {
         userService.verifyRoleByUuid(managerUuid, UserRole.MANAGER);
         final ProjectSpecification projectSpecification = new ProjectSpecification(projectFilter);
+
         return projectRepository.findAll(projectSpecification)
                 .stream()
-                .map(ProjectMapper::convertToDto)
+                .map(project -> ProjectMapper.convertToDto(project,
+                        countCurrentSpendingForProject(project)))
                 .collect(Collectors.toList());
     }
 
@@ -104,6 +113,23 @@ public class ProjectServiceImpl implements ProjectService {
                     String.format("Project title %s is already in use", projectForm.getTitle()));
         }
         return entity;
+    }
+
+    public BigDecimal countCurrentSpendingForProject(final Project project) {
+        BigDecimal currentSpending = BigDecimal.ZERO;
+        for (final Record record : project.getRecords()) {
+            final BigDecimal costPerHour = record.getUser().getCostPerHour();
+            final BigDecimal costPerMinute = costPerHour.divide(BigDecimal.valueOf(60), 5, RoundingMode.HALF_DOWN);
+            final BigDecimal timeInMinutes = BigDecimal.valueOf(Duration.between(record.getStartDateTime(), record.getEndDateTime()).toMinutes());
+            currentSpending = currentSpending.add(timeInMinutes.multiply(costPerMinute).setScale(2, RoundingMode.HALF_UP));
+        }
+        return currentSpending;
+    }
+
+    public void updateBudgetUse(final Project project, final BigDecimal currentSpending) {
+        project.setBudgetUse(currentSpending
+                .multiply(BigDecimal.valueOf(100))
+                .divide(project.getBudget(), RoundingMode.HALF_UP));
     }
 
 }
