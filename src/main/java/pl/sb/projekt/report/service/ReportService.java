@@ -1,6 +1,7 @@
 package pl.sb.projekt.report.service;
 
 import pl.sb.projekt.record.model.Record;
+import pl.sb.projekt.report.dto.ReportDetails;
 import pl.sb.projekt.report.dto.ReportDto;
 import pl.sb.projekt.report.search.DateRange;
 
@@ -8,7 +9,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,29 +26,19 @@ abstract class ReportService {
         };
     }
 
-    BigDecimal getOverallCost(final Set<Record> records) {
-        return records.stream()
-                .map(Record::getCostOfWork)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    ReportDetails getOverallHoursAndCost(final Set<Record> records) {
+        ReportDetails reportDetails = new ReportDetails();
+        records.stream()
+                .map(rec -> {
+                    BigDecimal hoursInProject = BigDecimal.valueOf(Duration.between(rec.getStartDateTime(), rec.getEndDateTime()).toHours());
+                    BigDecimal costOfWork = rec.getCostOfWork();
+                    return new ReportDetails(costOfWork, hoursInProject);
+                })
+                .forEach(obj -> {
+                    reportDetails.setCostDetail(reportDetails.getCostDetail().add(obj.getCostDetail()));
+                    reportDetails.setWorkedHoursDetail(reportDetails.getWorkedHoursDetail().add(obj.getWorkedHoursDetail()));
+                });
+        return reportDetails;
     }
 
-    BigDecimal getAllHoursWorked(final Set<Record> records) {
-        long allHoursWorked = records.stream()
-                .map(record -> Duration.between(record.getStartDateTime(), record.getEndDateTime()).toHours())
-                .mapToLong(Long::longValue).sum();
-        return BigDecimal.valueOf(allHoursWorked);
-    }
-
-    BigDecimal calculateWorkedHours(final List<Record> filteredRecords) {
-        return filteredRecords.stream()
-                .map(rec -> Duration.between(rec.getStartDateTime(), rec.getEndDateTime()).toHours())
-                .map(BigDecimal::new)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    BigDecimal calculateOverallCost(final List<Record> filteredRecords) {
-        return filteredRecords.stream()
-                .map(Record::getCostOfWork)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
 }

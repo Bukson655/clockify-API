@@ -15,10 +15,10 @@ import pl.sb.projekt.user.repository.UserRepository;
 import pl.sb.projekt.user.service.UserService;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -37,8 +37,9 @@ public class UserReportService extends ReportService {
                 .orElseThrow(() -> new NotFoundException(String.format("User with UUID %s does not exist", userUuid)));
         Set<Record> records = user.getRecords();
         final Map<String, ReportDetails> userInProjects = getProjectHoursAndCostSummary(user);
-        final BigDecimal overallCost = getOverallCost(records);
-        final BigDecimal allHoursWorked = getAllHoursWorked(records);
+        final ReportDetails overallHoursAndCost = getOverallHoursAndCost(records);
+        final BigDecimal overallCost = overallHoursAndCost.getCostDetail();
+        final BigDecimal allHoursWorked = overallHoursAndCost.getWorkedHoursDetail();
         return new UserReportDto(user.getCostPerHour(), overallCost, allHoursWorked, userInProjects);
     }
 
@@ -46,14 +47,14 @@ public class UserReportService extends ReportService {
         final Map<String, ReportDetails> userInProjectDetails = new HashMap<>();
 
         for (Project project : user.getProjects()) {
-            final Set<Record> records = user.getRecords();
-            final List<Record> filteredRecords = records.stream()
+            user.getRecords().stream()
                     .filter(record -> record.getProject().getUuid().equals(project.getUuid()))
-                    .toList();
-            final BigDecimal overallCostForProject = calculateOverallCost(filteredRecords);
-            final BigDecimal workedHoursInProject = calculateWorkedHours(filteredRecords);
-            userInProjectDetails.put(project.getTitle(),
-                    new ReportDetails(overallCostForProject, workedHoursInProject));
+                    .map(rec -> {
+                        BigDecimal hoursInProject = BigDecimal.valueOf(Duration.between(rec.getStartDateTime(), rec.getEndDateTime()).toHours());
+                        BigDecimal costOfWork = rec.getCostOfWork();
+                        return new ReportDetails(costOfWork, hoursInProject);
+                    })
+                    .forEach(reportDetails -> userInProjectDetails.put(project.getTitle(), reportDetails));
         }
         return userInProjectDetails;
     }

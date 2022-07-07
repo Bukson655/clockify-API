@@ -13,6 +13,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ReportDetails {
 
-    private BigDecimal costDetail;
-    private BigDecimal workedHoursDetail;
+    private BigDecimal costDetail = BigDecimal.ZERO;
+    private BigDecimal workedHoursDetail = BigDecimal.ZERO;
 }
