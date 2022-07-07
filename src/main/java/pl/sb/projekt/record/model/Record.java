@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,6 +37,9 @@ public class Record extends EntityAbstract {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "cost_of_work", nullable = false)
+    private BigDecimal costOfWork = BigDecimal.ZERO;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "project_id")

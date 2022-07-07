@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS "record" (
     start_date_time TIMESTAMP NOT NULL,
     end_date_time TIMESTAMP NOT NULL,
     description VARCHAR (255),
+    cost_of_work NUMERIC(10,2) NOT NULL,
     project_id BIGINT REFERENCES project,
     user_id BIGINT REFERENCES "user");
 

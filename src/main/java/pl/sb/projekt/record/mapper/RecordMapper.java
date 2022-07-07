@@ -6,6 +6,8 @@ import pl.sb.projekt.record.dto.RecordForm;
 import pl.sb.projekt.record.model.Record;
 import pl.sb.projekt.user.model.User;
 
+import java.math.BigDecimal;
+
 public class RecordMapper {
 
     public static RecordDto convertToDto(final Record record) {
@@ -17,20 +19,24 @@ public class RecordMapper {
         return recordDto;
     }
 
-    public static Record convertFromForm(final RecordForm recordForm, User user, Project project) {
+    public static Record convertFromForm(final RecordForm recordForm, final User user,
+                                         final Project project, final BigDecimal cost) {
         final Record record = new Record();
         record.setStartDateTime(recordForm.getStartDateTime());
         record.setEndDateTime(recordForm.getEndDateTime());
         record.setDescription(recordForm.getDescription());
+        record.setCostOfWork(cost);
         record.setUser(user);
         record.setProject(project);
         return record;
     }
 
-    public static Record setRecordFields(final RecordForm recordForm, final Record entity, final Project project) {
+    public static Record setRecordFields(final RecordForm recordForm, final Record entity,
+                                         final Project project, final BigDecimal cost) {
         entity.setStartDateTime(recordForm.getStartDateTime());
         entity.setEndDateTime(recordForm.getEndDateTime());
         entity.setDescription(recordForm.getDescription());
+        entity.setCostOfWork(cost);
         entity.setProject(project);
         entity.setUser(entity.getUser());
         return entity;

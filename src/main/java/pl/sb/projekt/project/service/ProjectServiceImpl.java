@@ -20,7 +20,6 @@ import pl.sb.projekt.user.service.UserService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -118,10 +117,8 @@ public class ProjectServiceImpl implements ProjectService {
     public BigDecimal countCurrentSpendingForProject(final Project project) {
         BigDecimal currentSpending = BigDecimal.ZERO;
         for (final Record record : project.getRecords()) {
-            final BigDecimal costPerHour = record.getUser().getCostPerHour();
-            final BigDecimal costPerMinute = costPerHour.divide(BigDecimal.valueOf(60), 5, RoundingMode.HALF_DOWN);
-            final BigDecimal timeInMinutes = BigDecimal.valueOf(Duration.between(record.getStartDateTime(), record.getEndDateTime()).toMinutes());
-            currentSpending = currentSpending.add(timeInMinutes.multiply(costPerMinute).setScale(2, RoundingMode.HALF_UP));
+            final BigDecimal costOfWork = record.getCostOfWork();
+            currentSpending = currentSpending.add(costOfWork);
         }
         return currentSpending;
     }
@@ -129,7 +126,7 @@ public class ProjectServiceImpl implements ProjectService {
     public void updateBudgetUse(final Project project, final BigDecimal currentSpending) {
         project.setBudgetUse(currentSpending
                 .multiply(BigDecimal.valueOf(100))
-                .divide(project.getBudget(), RoundingMode.HALF_UP));
+                .divide(project.getBudget(), RoundingMode.DOWN));
     }
 
 }

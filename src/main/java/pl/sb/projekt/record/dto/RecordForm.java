@@ -8,6 +8,8 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,6 +17,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class RecordForm {
+
+    private static final long MINUTES_IN_HOUR = 60;
+    private static final int DIVIDE_SCALE = 5;
 
     @NotNull(message = "startDateTime cannot be null, use pattern : yyyy-MM-mm hh:mm")
     @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm")
@@ -33,5 +38,9 @@ public class RecordForm {
 
     @NotNull(message = "userUuid cannot be null")
     private UUID userUuid;
+
+    public BigDecimal getTimeInMinutes() {
+        return BigDecimal.valueOf(Duration.between(startDateTime, endDateTime).toMinutes());
+    }
 
 }

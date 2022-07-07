@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.sb.projekt.project.model.Project;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,4 +37,13 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
             "FROM Project p " +
             "LEFT JOIN FETCH p.records r")
     List<Project> findAll();
+
+    @Query("SELECT p " +
+            "FROM Project p " +
+            "LEFT JOIN FETCH p.users u " +
+            "LEFT JOIN FETCH p.records r " +
+            "WHERE p.uuid = :projectUuid " +
+            "AND r.startDateTime > :lowerDateRange " +
+            "AND r.endDateTime < :actualTime")
+    Optional<Project> findByUuidWithDateRange(UUID projectUuid, LocalDateTime lowerDateRange, LocalDateTime actualTime);
 }
