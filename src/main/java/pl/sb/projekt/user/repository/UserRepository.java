@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.sb.projekt.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,5 +29,14 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     boolean existsByLogin(String login);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT u " +
+            "FROM User u " +
+            "LEFT JOIN FETCH u.projects p " +
+            "LEFT JOIN FETCH u.records r " +
+            "WHERE u.uuid = :uuid " +
+            "AND r.startDateTime > :lowerDateRange " +
+            "AND r. endDateTime < :actualTime")
+    Optional<User> findByUuidWithDateRange(UUID uuid, LocalDateTime lowerDateRange, LocalDateTime actualTime);
 
 }

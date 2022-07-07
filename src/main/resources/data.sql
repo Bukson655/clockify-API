@@ -24,9 +24,9 @@ VALUES
     (7, 4);
 
 INSERT INTO "record"
-    (id, uuid, start_date_time, end_date_time, description, project_id, user_id)
+    (id, uuid, start_date_time, end_date_time, description, cost_of_work, project_id, user_id)
 VALUES
-    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-06 8:00','2022-06-06 12:00', 'testowanie', 6, 1),
-    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-06 10:00','2022-06-06 17:00', '', 6, 2),
-    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-06 9:00','2022-06-06 16:00', 'praca', 6, 3),
-    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-07 10:00','2022-06-07 16:00', 'praca i jeszcze raz praca', 7, 3);
+    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-06 8:00','2022-06-06 12:00', 'testowanie', 400, 6, 1),
+    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-06 10:00','2022-06-06 17:00', '', 735, 6, 2),
+    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-06 9:00','2022-06-06 16:00', 'praca', 560, 6, 3),
+    (nextval('hibernate_sequence'), uuid_generate_v4(), '2022-06-07 10:00','2022-06-07 16:00', 'praca i jeszcze raz praca', 480, 7, 3);

@@ -16,6 +16,9 @@ import pl.sb.projekt.record.repository.RecordRepository;
 import pl.sb.projekt.user.model.User;
 import pl.sb.projekt.user.repository.UserRepository;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +26,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RecordServiceImpl implements RecordService {
+
+    private static final long MINUTES_IN_HOUR = 60;
+    private static final int DIVIDE_SCALE = 5;
+    private static final int SCALE_OF_COST = 2;
 
     private final RecordRepository recordRepository;
     private final UserRepository userRepository;
@@ -44,11 +51,17 @@ public class RecordServiceImpl implements RecordService {
         Project project = projectRepository.findByUuid(recordForm.getProjectUuid())
                 .orElseThrow(() -> new NotFoundException(String.format("Project with UUID %s does not exist", recordForm.getProjectUuid())));
         verifyIfUserBelongToProject(user, project);
-
-        final Record record = recordRepository.save(RecordMapper.convertFromForm(recordForm, user, project));
+        BigDecimal cost = calculateCostOfWork(user.getCostPerHour(), recordForm);
+        final Record record = recordRepository.save(RecordMapper.convertFromForm(recordForm, user, project, cost));
         user.addRecord(record);
         project.addRecord(record);
         projectService.updateBudgetUse(project, projectService.countCurrentSpendingForProject(project));
+    }
+
+    private BigDecimal calculateCostOfWork(final BigDecimal costPerHour, final RecordForm recordForm) {
+        final BigDecimal costPerMinute = costPerHour.divide(BigDecimal.valueOf(MINUTES_IN_HOUR), DIVIDE_SCALE, RoundingMode.HALF_UP);
+        BigDecimal timeInMinutes = recordForm.getTimeInMinutes();
+        return timeInMinutes.multiply(costPerMinute).setScale(SCALE_OF_COST, RoundingMode.HALF_UP);
     }
 
     @Transactional
@@ -80,7 +93,9 @@ public class RecordServiceImpl implements RecordService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Record with UUID %s and user with UUID %s does not match", recordUuid, userUuid)));
         projectService.updateBudgetUse(project, projectService.countCurrentSpendingForProject(project));
-        return RecordMapper.convertToDto(RecordMapper.setRecordFields(recordForm, record, project));
+        BigDecimal cost = calculateCostOfWork(user.getCostPerHour(), recordForm);
+        Record updatedRecord = RecordMapper.setRecordFields(recordForm, record, project, cost);
+        return RecordMapper.convertToDto(updatedRecord);
     }
 
     private void verifyIfUserBelongToProject(final User user, final Project project) {
