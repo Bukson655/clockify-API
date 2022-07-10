@@ -2,17 +2,16 @@ package pl.sb.projekt.report.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
 public class ReportDetails {
 
-    private BigDecimal costDetail = BigDecimal.ZERO;
-    private BigDecimal workedHoursDetail = BigDecimal.ZERO;
+    private String name;
+    private BigDecimal overallCost;
+    private BigDecimal workedHours;
 }

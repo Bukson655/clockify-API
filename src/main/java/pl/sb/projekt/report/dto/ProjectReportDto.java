@@ -4,16 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
-public class ProjectReportDto extends ReportDto {
+public class ProjectReportDto {
 
-    private boolean isOverBudget;
-
-    public ProjectReportDto(boolean isOverBudget, BigDecimal overallCost, BigDecimal workedHours, Map<String, ReportDetails> userInProjects) {
-        super(overallCost, workedHours, userInProjects);
-        this.isOverBudget = isOverBudget;
-    }
+    private BigDecimal overallCost = BigDecimal.ZERO;
+    private BigDecimal workedHours = BigDecimal.ZERO;
+    private List<ReportDetails> userInProjects = new ArrayList<>();
+    private Boolean isOverBudget;
 }
