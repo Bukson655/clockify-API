@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+#  application:
+#    image:
+
+  database:
+    image: postgres
+    ports:
+      - target: 5432
+        published: 6000
+        protocol: tcp
+        mode: host
+    environment:
+      POSTGRES_DB: testdb-2
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      TZ: Europe/Warsaw
